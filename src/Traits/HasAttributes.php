@@ -47,18 +47,19 @@ trait HasAttributes
         return false;
     }
 
-    public function getDates()
+    public function getDates(): array
     {
-        return $this->dates;
+        return $this->dates ?? [];
     }
 
     /**
-    * Set a given attribute on the model.
-    *
-    * @param  string  $key
-    * @param  mixed  $value
-    * @return $this
-    */
+     * Set a given attribute on the model.
+     *
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return $this
+     */
     public function setAttribute($key, $value)
     {
         if (is_array($value) || is_object($value)) {
@@ -81,7 +82,7 @@ trait HasAttributes
         // If an attribute is listed as a "date", we'll convert it from a DateTime
         // instance into a form proper for storage on the database tables using
         // the connection grammar's date format. We will auto set the values.
-        elseif ($value && $this->isDateAttribute($key)) {
+        else if ($value && $this->isDateAttribute($key)) {
             $value = $this->fromDateTime($value);
         }
 
@@ -91,7 +92,7 @@ trait HasAttributes
             return $this;
         }
 
-        if ($this->isJsonCastable($key) && ! is_null($value)) {
+        if ($this->isJsonCastable($key) && !is_null($value)) {
             $value = $this->castAttributeAsJson($key, $value);
         }
 
@@ -123,7 +124,7 @@ trait HasAttributes
         }
         if ($this->isRelationship($tempKey)) {
             $function = $tempKey;
-        } elseif ($this->isRelationship(Str::plural($tempKey))) {
+        } else if ($this->isRelationship(Str::plural($tempKey))) {
             $function = Str::plural($tempKey);
         }
         if (isset($function)) {
@@ -139,10 +140,10 @@ trait HasAttributes
 
         if ($this->isRelationship($key)) {
             $this->getRelation($key)->update($value);
-        } elseif ($this->isRelationship(Str::plural($key))) {
+        } else if ($this->isRelationship(Str::plural($key))) {
             $key = Str::plural($key);
             $this->getRelation($key)->update($value);
-        } elseif ($this->isRelationship(Str::singular($key))) {
+        } else if ($this->isRelationship(Str::singular($key))) {
             $key = Str::singular($key);
             $this->getRelation($key)->update($value);
         }
@@ -150,7 +151,7 @@ trait HasAttributes
 
     public function getAttribute($key)
     {
-        if (! $key) {
+        if (!$key) {
             return;
         }
 
@@ -176,7 +177,8 @@ trait HasAttributes
     /**
      * Get a relationship.
      *
-     * @param  string  $key
+     * @param string $key
+     *
      * @return mixed
      */
     public function getRelationValue($key)
@@ -199,7 +201,8 @@ trait HasAttributes
     /**
      * Get a relationship value from a method.
      *
-     * @param  string  $method
+     * @param string $method
+     *
      * @return mixed
      *
      * @throws \LogicException
@@ -208,7 +211,7 @@ trait HasAttributes
     {
         $relation = $this->$method();
 
-        if (! $relation instanceof Relation) {
+        if (!$relation instanceof Relation) {
             if (is_null($relation)) {
                 throw new LogicException(sprintf(
                     '%s::%s must return a relationship instance, but "null" was returned. Was the "return" keyword used?',
